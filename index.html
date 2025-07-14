@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+        background: #f9f9f9;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        color: #333;
+      }
+      h2 {
+        text-align: center;
+        color: #4a90e2;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 14px;
+        resize: vertical;
+      }
+      input[type="submit"] {
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 15px;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+      }
+      input[type="submit"]:hover {
+        background-color: #357ab8;
+      }
+      #result {
+        margin-top: 20px;
+        padding: 10px;
+        background: #e6f7ff;
+        border: 1px solid #b3e5fc;
+        border-radius: 4px;
+        word-wrap: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Create Advisory Document</h2>
+    <form id="dataForm">
+      <label for="json">Advisory JSON:</label>
+      <textarea name="json" id="json" required></textarea>
+      <input type="submit" value="Create Document">
+    </form>
+    <div id="result"></div>
+
+<script>
+  document.getElementById("dataForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    var formData = Object.fromEntries(new FormData(e.target).entries());
+
+    document.getElementById("result").innerHTML = "⏳ Creating document...";
+
+    google.script.run
+      .withSuccessHandler(function(result) {
+        if (typeof result === 'string' && result.startsWith("http")) {
+          document.getElementById("result").innerHTML =
+            '✅ Document created: <a href="' + result + '" target="_blank">Open Document</a>';
+        } else {
+          document.getElementById("result").innerHTML =
+            '❌ Document creation failed: ' + result;
+        }
+      })
+      .withFailureHandler(function(error) {
+        document.getElementById("result").innerHTML =
+          '❌ Server error: ' + error.message;
+      })
+      .createDocument(formData);
+  });
+</script>
+
+  </body>
+</html>
+
